@@ -1,0 +1,55 @@
+<!--<pre *ngIf="clienteLista$ | async as clientes">-->
+<!--  {{ clientes | json }}-->
+<!--</pre>-->
+
+<div class="csv-result-table" *ngIf="clienteLista$ | async as list">
+  <div *ngFor="let li of list">
+    <div>
+      <h4 class="cliente">
+        CLIENTE: {{ li.cliente }} (Código: {{ li.cliente_codigo }})
+      </h4>
+      <table *ngFor="let item of li.lista" class="table table-striped">
+        <thead>
+          <tr class="pallet">
+            <th scope="col">Numero Pallet: {{ item.numero }}</th>
+            <th scope="col">Destino: {{ li.destino }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4">
+              <table class="table subtable">
+                <thead>
+                  <tr>
+                    <th scope="col">Productor</th>
+                    <th scope="col">ProductorID</th>
+                    <th scope="col">Fecha de Cosecha</th>
+                    <th scope="col">Variedad</th>
+                    <th scope="col">Cajas</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let it of item.detalle">
+                  <td>
+                    <span>{{ it.productor }}</span>
+                  </td>
+                  <td>
+                    <span>{{ it.productor_id }}</span>
+                  </td>
+                  <td>
+                    <span>{{ it.fecha_cosecha }}</span>
+                  </td>
+                  <td>
+                    <span>{{ it.variedad }}</span>
+                  </td>
+                  <td>
+                    <span>{{ it.cajas }}</span>
+                  </td>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

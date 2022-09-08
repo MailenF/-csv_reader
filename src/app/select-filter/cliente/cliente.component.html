@@ -1,0 +1,24 @@
+<!--<pre *ngIf="clientes$ | async as clientes">-->
+<!--  {{ clientes | json }}-->
+<!--</pre>-->
+
+<div *ngIf="clientes$ | async as clientes" class="container">
+  <mat-form-field appearance="fill">
+    <mat-label>Clientes</mat-label>
+    <mat-select [formControl]="clienteFormControl" multiple>
+      <!--      <mat-select-trigger>-->
+      <!--        {{clienteFormControl.value?.[0] || ''}}-->
+      <!--        <span-->
+      <!--          *ngIf="(clienteFormControl.value?.length || 0) > 1"-->
+      <!--          class="example-additional-selection"-->
+      <!--        >-->
+      <!--          (+{{ (clienteFormControl.value?.length || 0) - 1 }}-->
+      <!--          {{ clienteFormControl.value?.length === 2 ? "other" : "others" }})-->
+      <!--        </span>-->
+      <!--      </mat-select-trigger>-->
+      <mat-option *ngFor="let cliente of clientes" [value]="cliente.id">{{
+        cliente.cliente
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

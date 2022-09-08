@@ -1,0 +1,35 @@
+<!--<pre *ngIf="variedadLista$ | async as variedades">-->
+<!--  {{ variedades | json }}-->
+<!--</pre>-->
+
+<div class="csv-result-table" *ngIf="variedadLista$ | async as variedades">
+  <div *ngFor="let variedad of variedades">
+    <h4 class="variedad">VARIEDAD: {{ variedad.variedad }}</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr class="descripcion">
+          <th scope="col">N° Pallet</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Cliente Código</th>
+          <th scope="col">Destino</th>
+          <th scope="col">Cajas</th>
+          <th scope="col">Fecha de Cosecha</th>
+          <th scope="col">Productor</th>
+          <th scope="col">Productor ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vari of variedad.lista">
+          <td>{{ vari.numero }}</td>
+          <td>{{ vari.cliente }}</td>
+          <td>{{ vari.cliente_codigo }}</td>
+          <td>{{ vari.destino }}</td>
+          <td>{{ vari.cajas }}</td>
+          <td>{{ vari.fecha_cosecha }}</td>
+          <td>{{ vari.productor }}</td>
+          <td>{{ vari.productor_id }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

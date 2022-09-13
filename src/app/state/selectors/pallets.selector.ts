@@ -7,10 +7,19 @@ import { ClienteState } from '../../interfaces/cliente-state';
 import * as _ from 'lodash';
 import { VariedadState } from '../../interfaces/variedad-state';
 import { Variedad } from '../../interfaces/variedad';
+import { Productores } from '../../interfaces/productores';
+import { ProductorState } from '../../interfaces/productor-state';
+import { Productor } from '../../interfaces/productor';
+import { CsvState } from '../../interfaces/csv-state';
+import { ListaProductor } from '../../interfaces/lista-productor';
 
 export const selectPalletsFeature = (state: AppState) => state.pallets;
+export const selectDataFeature = (state: AppState) => state.data;
 export const selectClientesFeature = (state: AppState) => state.clientes;
+export const selectProductoresFeature = (state: AppState) => state.productores;
 export const selectedVariedadesFeature = (state: AppState) => state.variedades;
+
+//------------------------INFORMACION TABLA PRINCIPAL--------------------------------
 
 export const selectPallets = createSelector(
   selectPalletsFeature,
@@ -62,7 +71,7 @@ export const selectPallets = createSelector(
   }
 );
 
-//---------------------------------------------------------------------------------
+//------------------------INFORMACION TABLA CLIENTES--------------------------------
 
 export const selectClientes = createSelector(
   selectPalletsFeature,
@@ -113,7 +122,78 @@ export const selectClientes = createSelector(
   }
 );
 
-//---------------------------------------------------------------------------------
+//------------------------INFORMACION TABLA PRODUCTORES-----------------------------
+
+export const selectProductores = createSelector(
+  selectDataFeature,
+  selectProductoresFeature,
+  (data: CsvState, productores: ProductorState) => {
+    const valuesPallet: any[] = [];
+    const productor: Productor[] = [];
+
+    for (let i = 0; i < data.data.length; i++) {
+      valuesPallet.push(data.data[i]);
+    }
+
+    for (let i = 0; i < productores.productores.length; i++) {
+      //NOMNRE DEL PRODUCTOR SELECCIONADO
+      for (let h = 0; h < valuesPallet.length; h++) {
+        //ARRAY DE OBJETOS CON LOS DATOS DE LOS PALLETS
+
+        console.log([i], [h], 'productor', productor); //ES MI VARIABLE "VACIA" DONDE HAGO PUSH DE LA INFO
+        console.log([h], valuesPallet[h]); //PALLET QUE VA SELECCIONANDO
+        console.log('productoresID', productores.productores[i]); // ID PRODUCTOR SELECCIONADO EN MI FILTER
+        console.log('palletsID', valuesPallet[h].ProductorID); // ID DEL PRODUCTOR DEL ARRAY DE OBJ
+
+        if (productores.productores[i] === valuesPallet[h].ProductorID) {
+          //SI EL ID DE MI PRODUCTOR SELECCIONADO
+          //ES = AL ID DE LOS PRODUCTORES DE MI
+          //ARRAY DE OBJ DE DATOS PALLETS
+          const data = {
+            productor: valuesPallet[h].Productor,
+            productor_id: valuesPallet[h].ProductorID,
+            lista: [
+              {
+                numero: valuesPallet[h].NumeroPallet,
+                cliente: valuesPallet[h].Cliente,
+                cliente_codigo: valuesPallet[h].ClienteCodigo,
+                destino: valuesPallet[h].Destino,
+                cajas: valuesPallet[h].Cajas,
+                fecha_cosecha: valuesPallet[h].FechaCosecha,
+                variedad: valuesPallet[h].Variedad,
+              },
+            ],
+          };
+          console.log('data', data);
+          productor.push(data);
+        }
+        // else if (
+        //   productores.productores[i] === valuesPallet[h].ProductorID &&
+        //   productor.find((value) => {
+        //     value.productor_id === productores.productores[i];
+        //   })
+        // ) {
+        // for (let value of productor) {
+        //   if (value.productor_id === productores.productores[i]) {
+        //     value.lista.push({
+        //       numero: valuesPallet[h].NumeroPallet,
+        //       cliente: valuesPallet[h].Cliente,
+        //       cliente_codigo: valuesPallet[h].ClienteCodigo,
+        //       destino: valuesPallet[h].Destino,
+        //       cajas: valuesPallet[h].Cajas,
+        //       fecha_cosecha: valuesPallet[h].FechaCosecha,
+        //       variedad: valuesPallet[h].Variedad,
+        //     });
+        //   }
+        // }
+        // }
+      }
+    }
+    return productor;
+  }
+);
+
+//------------------------INFORMACION TABLA VARIEDAD--------------------------------
 
 export const selectVariedades = createSelector(
   selectPalletsFeature,
@@ -190,7 +270,7 @@ export const selectVariedades = createSelector(
   }
 );
 
-//---------------------------------------------------------------------------------
+//----------------------SELECCIONAR LOS CLIENTES PARA EL FILTER--------------------------------
 
 export const selectedClientes = createSelector(
   selectPalletsFeature,
@@ -234,7 +314,39 @@ export const selectedClientes = createSelector(
   }
 );
 
-//---------------------------------------------------------------------------------
+//----------------------SELECCIONAR LOS PRODUCTORES PARA EL FILTER---------------------------------
+
+export const selectedProductores = createSelector(
+  selectPalletsFeature,
+  (state: PalletsState) => {
+    const productores: Productores[] = [];
+
+    for (let i = 0; i < state.pallets.length; i++) {
+      for (let k = 0; k < state.pallets[i].detalle.length; k++) {
+        if (productores.length === 0) {
+          const productor = {
+            productor: state.pallets[0].detalle[0].productor,
+            id: state.pallets[0].detalle[0].productor_id,
+          };
+          productores.push(productor);
+        } else if (
+          !productores.find(
+            (value) => value.id === state.pallets[i].detalle[k].productor_id
+          )
+        ) {
+          const productor = {
+            productor: state.pallets[i].detalle[k].productor,
+            id: state.pallets[i].detalle[k].productor_id,
+          };
+          productores.push(productor);
+        }
+      }
+    }
+    return productores;
+  }
+);
+
+//----------------------SELECCIONAR LAS VARIEDADES PARA EL FILTER--------------------------
 
 export const selectedVariedad = createSelector(
   selectPalletsFeature,

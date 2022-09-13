@@ -1,7 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Pallets } from '../../interfaces/pallets';
 import { CSV } from '../../interfaces/CSV';
-import { ClienteState } from '../../interfaces/cliente-state';
 
 export const newFileCsv = createAction(
   '[New Csv] file csv',
@@ -16,6 +15,11 @@ export const newData = createAction(
 export const getCliente = createAction(
   '[Get Cliente] get cliente',
   props<{ clientes: string }>()
+);
+
+export const getProductor = createAction(
+  '[Get Productor] get productor',
+  props<{ productores: string }>()
 );
 
 export const getVariedad = createAction(

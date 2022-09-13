@@ -23,6 +23,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VariedadComponent } from './select-filter/variedad/variedad.component';
 import { TableClienteFilterComponent } from './table-cliente-filter/table-cliente-filter.component';
 import { TableVariedadFilterComponent } from './table-variedad-filter/table-variedad-filter.component';
+import { ProductorComponent } from './select-filter/productor/productor.component';
+import { TableProductorFilterComponent } from './table-productor-filter/table-productor-filter.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { TableVariedadFilterComponent } from './table-variedad-filter/table-vari
     VariedadComponent,
     TableClienteFilterComponent,
     TableVariedadFilterComponent,
+    ProductorComponent,
+    TableProductorFilterComponent,
   ],
   imports: [
     CommonModule,

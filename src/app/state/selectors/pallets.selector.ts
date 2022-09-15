@@ -10,11 +10,8 @@ import { Variedad } from '../../interfaces/variedad';
 import { Productores } from '../../interfaces/productores';
 import { ProductorState } from '../../interfaces/productor-state';
 import { Productor } from '../../interfaces/productor';
-import { CsvState } from '../../interfaces/csv-state';
-import { ListaProductor } from '../../interfaces/lista-productor';
 
 export const selectPalletsFeature = (state: AppState) => state.pallets;
-export const selectDataFeature = (state: AppState) => state.data;
 export const selectClientesFeature = (state: AppState) => state.clientes;
 export const selectProductoresFeature = (state: AppState) => state.productores;
 export const selectedVariedadesFeature = (state: AppState) => state.variedades;
@@ -125,82 +122,11 @@ export const selectClientes = createSelector(
 //------------------------INFORMACION TABLA PRODUCTORES-----------------------------
 
 export const selectProductores = createSelector(
-  selectDataFeature,
+  selectPalletsFeature,
   selectProductoresFeature,
-  (data: CsvState, productores: ProductorState) => {
+  (state: PalletsState, productores: ProductorState) => {
     const valuesPallet: any[] = [];
     const productor: Productor[] = [];
-
-    for (let i = 0; i < data.data.length; i++) {
-      valuesPallet.push(data.data[i]);
-    }
-
-    for (let i = 0; i < productores.productores.length; i++) {
-      //NOMNRE DEL PRODUCTOR SELECCIONADO
-      for (let h = 0; h < valuesPallet.length; h++) {
-        //ARRAY DE OBJETOS CON LOS DATOS DE LOS PALLETS
-
-        console.log([i], [h], 'productor', productor); //ES MI VARIABLE "VACIA" DONDE HAGO PUSH DE LA INFO
-        console.log([h], valuesPallet[h]); //PALLET QUE VA SELECCIONANDO
-        console.log('productoresID', productores.productores[i]); // ID PRODUCTOR SELECCIONADO EN MI FILTER
-        console.log('palletsID', valuesPallet[h].ProductorID); // ID DEL PRODUCTOR DEL ARRAY DE OBJ
-
-        if (productores.productores[i] === valuesPallet[h].ProductorID) {
-          //SI EL ID DE MI PRODUCTOR SELECCIONADO
-          //ES = AL ID DE LOS PRODUCTORES DE MI
-          //ARRAY DE OBJ DE DATOS PALLETS
-          const data = {
-            productor: valuesPallet[h].Productor,
-            productor_id: valuesPallet[h].ProductorID,
-            lista: [
-              {
-                numero: valuesPallet[h].NumeroPallet,
-                cliente: valuesPallet[h].Cliente,
-                cliente_codigo: valuesPallet[h].ClienteCodigo,
-                destino: valuesPallet[h].Destino,
-                cajas: valuesPallet[h].Cajas,
-                fecha_cosecha: valuesPallet[h].FechaCosecha,
-                variedad: valuesPallet[h].Variedad,
-              },
-            ],
-          };
-          console.log('data', data);
-          productor.push(data);
-        }
-        // else if (
-        //   productores.productores[i] === valuesPallet[h].ProductorID &&
-        //   productor.find((value) => {
-        //     value.productor_id === productores.productores[i];
-        //   })
-        // ) {
-        // for (let value of productor) {
-        //   if (value.productor_id === productores.productores[i]) {
-        //     value.lista.push({
-        //       numero: valuesPallet[h].NumeroPallet,
-        //       cliente: valuesPallet[h].Cliente,
-        //       cliente_codigo: valuesPallet[h].ClienteCodigo,
-        //       destino: valuesPallet[h].Destino,
-        //       cajas: valuesPallet[h].Cajas,
-        //       fecha_cosecha: valuesPallet[h].FechaCosecha,
-        //       variedad: valuesPallet[h].Variedad,
-        //     });
-        //   }
-        // }
-        // }
-      }
-    }
-    return productor;
-  }
-);
-
-//------------------------INFORMACION TABLA VARIEDAD--------------------------------
-
-export const selectVariedades = createSelector(
-  selectPalletsFeature,
-  selectedVariedadesFeature,
-  (state: PalletsState, variedades: VariedadState) => {
-    const valuesPallet: any[] = [];
-    const variedad: Variedad[] = [];
 
     for (let i = 0; i < state.pallets.length; i++) {
       state.pallets[i].detalle.map((values) => {
@@ -219,54 +145,186 @@ export const selectVariedades = createSelector(
       });
     }
 
-    for (let i = 0; i < variedades.variedades.length; i++) {
-      for (let h = 0; h < valuesPallet.length; h++) {
-        if (
-          variedades.variedades[i] === valuesPallet[h].variedad &&
-          !variedad.find(
-            (values) => values.variedad === variedades.variedades[i]
-          )
-        ) {
-          const result = {
-            variedad: variedades.variedades[i],
-            lista: [
-              {
-                numero: valuesPallet[h].numero,
-                cliente: valuesPallet[h].cliente,
-                cliente_codigo: valuesPallet[h].cliente_codigo,
-                destino: valuesPallet[h].destino,
-                cajas: valuesPallet[h].cajas,
-                fecha_cosecha: valuesPallet[h].fecha_cosecha,
-                productor: valuesPallet[h].productor,
-                productor_id: valuesPallet[h].productor_id,
-              },
-            ],
-          };
-          variedad.push(result);
-        } else if (
-          variedades.variedades[i] === valuesPallet[h].variedad &&
-          variedad.find(
-            (values) => values.variedad === variedades.variedades[i]
-          )
-        ) {
-          for (let value of variedad) {
-            if (value.variedad === variedades.variedades[i]) {
-              value.lista.push({
-                numero: valuesPallet[h].numero,
-                cliente: valuesPallet[h].cliente,
-                cliente_codigo: valuesPallet[h].cliente_codigo,
-                destino: valuesPallet[h].destino,
-                cajas: valuesPallet[h].cajas,
-                fecha_cosecha: valuesPallet[h].fecha_cosecha,
-                productor: valuesPallet[h].productor,
-                productor_id: valuesPallet[h].productor_id,
-              });
-            }
+    for (let i = 0; i < valuesPallet.length; i++) {
+      for (let h = 0; h < productores.productores.length; h++) {
+        console.log(productores.productores);
+        console.log(i, h, productor);
+        if (valuesPallet[i].productor_id === productores.productores[h]) {
+          console.log(valuesPallet[i]);
+          productor.push(valuesPallet[i]);
+        }
+      }
+    }
+
+    // for (let i = 0; i < productores.productores.length; i++) {
+    //   //NOMNRE DEL PRODUCTOR SELECCIONADO
+    //   for (let h = 0; h < valuesPallet.length; h++) {
+    //     //ARRAY DE OBJETOS CON LOS DATOS DE LOS PALLETS
+    //
+    //     console.log([i], [h], 'productor', productor); //ES MI VARIABLE "VACIA" DONDE HAGO PUSH DE LA INFO
+    //     console.log([h], valuesPallet[h]); //PALLET QUE VA SELECCIONANDO
+    //     console.log('productoresID', productores.productores[i]); // ID PRODUCTOR SELECCIONADO EN MI FILTER
+    //     console.log('palletsID', valuesPallet[h].productor_id); // ID DEL PRODUCTOR DEL ARRAY DE OBJ
+    //
+    //     if (productores.productores[i] === valuesPallet[h].productor_id) {
+    //       //SI EL ID DE MI PRODUCTOR SELECCIONADO
+    //       //ES = AL ID DE LOS PRODUCTORES DE MI
+    //       //ARRAY DE OBJ DE DATOS PALLETS
+    //       const data = {
+    //         productor: valuesPallet[h].Productor,
+    //         productor_id: valuesPallet[h].productor_id,
+    //         lista: [
+    //           {
+    //             numero: valuesPallet[h].numero,
+    //             cliente: valuesPallet[h].cliente,
+    //             cliente_codigo: valuesPallet[h].cliente_codigo,
+    //             destino: valuesPallet[h].destino,
+    //             cajas: valuesPallet[h].cajas,
+    //             fecha_cosecha: valuesPallet[h].fecha_cosecha,
+    //             variedad: valuesPallet[h].variedad,
+    //           },
+    //         ],
+    //       };
+    //       console.log('data', data);
+    //       productor.push(data);
+    //     }
+    // else if (
+    //   productores.productores[i] === valuesPallet[h].ProductorID &&
+    //   productor.find((value) => {
+    //     value.productor_id === productores.productores[i];
+    //   })
+    // ) {
+    // for (let value of productor) {
+    //   if (value.productor_id === productores.productores[i]) {
+    //     value.lista.push({
+    //       numero: valuesPallet[h].NumeroPallet,
+    //       cliente: valuesPallet[h].Cliente,
+    //       cliente_codigo: valuesPallet[h].ClienteCodigo,
+    //       destino: valuesPallet[h].Destino,
+    //       cajas: valuesPallet[h].Cajas,
+    //       fecha_cosecha: valuesPallet[h].FechaCosecha,
+    //       variedad: valuesPallet[h].Variedad,
+    //     });
+    //   }
+    // }
+    // }
+    //   }
+    // }
+    return productor;
+  }
+);
+
+//------------------------INFORMACION TABLA VARIEDAD--------------------------------
+
+export const selectVariedades = createSelector(
+  selectPalletsFeature,
+  selectedVariedadesFeature,
+  (state: PalletsState, variedades: VariedadState) => {
+    const valuesPallet: any[] = [];
+    const variedad: Variedad[] = [];
+    const result1: any = [];
+
+    // for (let i = 0; i < state.pallets.length; i++) {
+    //   state.pallets[i].detalle.map((values) => {
+    //     const result = {
+    //       numero: state.pallets[i].numero,
+    //       cliente: state.pallets[i].cliente,
+    //       cliente_codigo: state.pallets[i].cliente_codigo,
+    //       destino: state.pallets[i].destino,
+    //       cajas: values.cajas,
+    //       fecha_cosecha: values.fecha_cosecha,
+    //       productor: values.productor,
+    //       productor_id: values.productor_id,
+    //       variedad: values.variedad,
+    //     };
+    //     valuesPallet.push(result);
+    //   });
+    // }
+    for (let h = 0; h < variedades.variedades.length; h++) {
+      console.log(variedad);
+      for (let i = 0; i < state.pallets.length; i++) {
+        console.log(variedad);
+        console.log(i, state.pallets[i]);
+        for (let k = 0; k < state.pallets[i].detalle.length; k++) {
+          console.log(variedades.variedades[h]);
+          console.log(i, k, state.pallets[i].detalle[k]);
+          console.log(variedad);
+          if (
+            variedades.variedades[h] === state.pallets[i].detalle[k].variedad
+          ) {
+            const result = {
+              variedad: variedades.variedades[i],
+              lista: [
+                {
+                  numero: state.pallets[i].numero,
+                  cliente: state.pallets[i].cliente,
+                  cliente_codigo: state.pallets[i].cliente_codigo,
+                  destino: state.pallets[i].destino,
+                  cajas: state.pallets[i].detalle[k].cajas,
+                  fecha_cosecha: state.pallets[i].detalle[k].fecha_cosecha,
+                  productor: state.pallets[i].detalle[k].productor,
+                  productor_id: state.pallets[i].detalle[k].productor_id,
+                },
+              ],
+            };
+            console.log('push');
+            variedad.push(result);
+          } else {
+            console.log('not push');
           }
         }
       }
     }
-    return variedad;
+
+    console.log(variedad);
+    //   for (let h = 0; h < valuesPallet.length; h++) {
+    //     for (let i = 0; i < variedades.variedades.length; i++) {
+    //       if (
+    //         variedades.variedades[i] === valuesPallet[h].variedad &&
+    //         !variedad.find(
+    //           (values) => values.variedad === variedades.variedades[i]
+    //         )
+    //       ) {
+    //         const result = {
+    //           variedad: variedades.variedades[i],
+    //           lista: [
+    //             {
+    //               numero: valuesPallet[h].numero,
+    //               cliente: valuesPallet[h].cliente,
+    //               cliente_codigo: valuesPallet[h].cliente_codigo,
+    //               destino: valuesPallet[h].destino,
+    //               cajas: valuesPallet[h].cajas,
+    //               fecha_cosecha: valuesPallet[h].fecha_cosecha,
+    //               productor: valuesPallet[h].productor,
+    //               productor_id: valuesPallet[h].productor_id,
+    //             },
+    //           ],
+    //         };
+    //         variedad.push(result);
+    //       } else if (
+    //         variedades.variedades[i] === valuesPallet[h].variedad &&
+    //         variedad.find(
+    //           (values) => values.variedad === variedades.variedades[i]
+    //         )
+    //       ) {
+    //         for (let value of variedad) {
+    //           if (value.variedad === variedades.variedades[i]) {
+    //             value.lista.push({
+    //               numero: valuesPallet[h].numero,
+    //               cliente: valuesPallet[h].cliente,
+    //               cliente_codigo: valuesPallet[h].cliente_codigo,
+    //               destino: valuesPallet[h].destino,
+    //               cajas: valuesPallet[h].cajas,
+    //               fecha_cosecha: valuesPallet[h].fecha_cosecha,
+    //               productor: valuesPallet[h].productor,
+    //               productor_id: valuesPallet[h].productor_id,
+    //             });
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    //   return variedad;
   }
 );
 

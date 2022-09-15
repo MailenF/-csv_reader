@@ -16,9 +16,6 @@ export const initialState: PalletsState = {
   pallets: [],
 };
 
-export const initialStateCsv: CsvState = {
-  data: [],
-};
 export const initialStateCliente: ClienteState = {
   clientes: '',
 };
@@ -35,13 +32,6 @@ export const palletReducer = createReducer(
   initialState,
   on(newData, (state, { pallets }) => {
     return { ...state, pallets };
-  })
-);
-
-export const csvReducer = createReducer(
-  initialStateCsv,
-  on(newFileCsv, (state, { data }) => {
-    return { ...state, data };
   })
 );
 

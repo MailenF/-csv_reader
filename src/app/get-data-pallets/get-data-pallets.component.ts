@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { Store } from '@ngrx/store';
 import { newFileCsv } from '../state/actions/pallets.action';
+import Swal from 'sweetalert2';
+import { CSV } from '../interfaces/CSV';
 
 @Component({
   selector: 'app-get-data-pallets',
@@ -9,13 +11,11 @@ import { newFileCsv } from '../state/actions/pallets.action';
   styleUrls: ['./get-data-pallets.component.css'],
 })
 export class GetDataPalletsComponent implements OnInit {
-  csvRecords: any;
-  header: boolean = true;
-  arr = new FileReader();
-
   constructor(private ngxCsvParser: NgxCsvParser, private store: Store) {}
 
-  //------------------- LEER Y PARSEAR CSV SIN LIBRERIA ------------------------------------------
+  //------------------- LEER Y PARSE CSV SIN LIBRERIA ------------------------------------------
+
+  //-------------------LEYENDO MI CSV CON FILEREADER--------------------------------------------
 
   changeListener($event: any): void {
     const fileInput = $event.target.files[0];
@@ -25,7 +25,7 @@ export class GetDataPalletsComponent implements OnInit {
       'load',
       () => {
         const fileContents = fileReader.result;
-        this.csvPase(fileContents);
+        this.csvValitation(fileContents);
       },
       false
     );
@@ -35,48 +35,138 @@ export class GetDataPalletsComponent implements OnInit {
     }
   }
 
-  csvPase(csv: any): void {
+  //------------------ VALIDACIÓN DE DATOS -------------------------------------------
+
+  csvValitation(csv: any): void {
     const trim = csv.trim();
     const delimiter = ',';
     const headers1 = trim.split('\r\n');
     const headers = headers1[0].split(delimiter);
     const rows = headers1.slice(1);
+    const headerLower = [];
+    const prop = [
+      'numeropallet',
+      'clientecodigo',
+      'cliente',
+      'destino',
+      'productorid',
+      'productor',
+      'fechacosecha',
+      'variedad',
+      'cajas',
+    ];
+    const variableMissing: string[] = [];
+    const arr: CSV[] = [];
 
-    const arr = rows.map(function (row: any) {
-      const values = row.split(delimiter);
-      const el = headers.reduce(function (
-        object: { [key: string]: string },
-        header: string,
-        index: number
+    //---------------- CONVERSIÓN DE HEADERS A MINÚSCULA---------
+
+    for (let i = 0; i < headers.length; i++) {
+      const result = headers[i].toLowerCase();
+      headerLower.push(result);
+    }
+
+    //-----------------VALIDACIÓN CANTIDAD DE COLUMNAS----------
+
+    if (headers.length < 9) {
+      for (let i = 0; i < prop.length; i++) {
+        if (!headerLower.includes(prop[i])) {
+          const result = prop[i].toUpperCase();
+          variableMissing.push(result);
+        }
+      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: `  ${'You are missing'} '${variableMissing}' ${'column from your csv!'}`,
+        confirmButtonText: 'OK',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      });
+    } else if (headers.length > 9) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'There are extra columns in your file csv',
+        confirmButtonText: 'OK',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      });
+    } else {
+      for (let i = 0; i < rows.length; i++) {
+        const result = rows[i].split(delimiter);
+        const obj: any = {};
+        for (let h = 0; h < result.length; h++) {
+          const key = headers[h];
+
+          obj[key] = result[h];
+        }
+        arr.push(obj);
+      }
+    }
+
+    //-------------------TRANFORMO MI CAJAS EN NUMBER-------------------------------------------
+
+    if (arr.length > 0) {
+      for (let i = 0; i < arr.length; i++) {
+        if (typeof arr[i].Cajas === 'string') {
+          arr[i].Cajas = Number(arr[i].Cajas);
+        }
+      }
+    }
+
+    //-----------------VALIDACION TIPO DE DATOS-------------------------------------------------
+
+    for (let i = 0; i < arr.length; i++) {
+      if (
+        typeof arr[i].Cajas === 'number' &&
+        typeof arr[i].Cliente === 'string' &&
+        typeof arr[i].ClienteCodigo === 'string' &&
+        typeof arr[i].Destino === 'string' &&
+        typeof arr[i].FechaCosecha === 'string' &&
+        typeof arr[i].NumeroPallet === 'string' &&
+        typeof arr[i].Productor === 'string' &&
+        typeof arr[i].ProductorID === 'string' &&
+        typeof arr[i].Variedad === 'string'
       ) {
-        object[header] = values[index];
-        return object;
-      },
-      {});
-      return el;
-    });
-    this.store.dispatch(newFileCsv({ data: arr }));
+        this.store.dispatch(newFileCsv({ data: arr }));
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Alguno de los tipos de datos no coincide',
+          confirmButtonText: 'OK',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    }
   }
 
   //----------------- LEER Y PARSEAR CSV CON LIBRERIA ---------------------------------------
 
-  fileChangeListener($event: any): void {
-    const files = $event.target.files;
-
-    this.ngxCsvParser
-      .parse(files[0], { header: this.header, delimiter: ',' })
-      .pipe()
-      .subscribe({
-        next: (result): void => {
-          this.csvRecords = result;
-          console.log('result', result);
-          this.store.dispatch(newFileCsv({ data: this.csvRecords }));
-        },
-        error: (error: NgxCSVParserError): void => {
-          console.log('Error', error);
-        },
-      });
-  }
-
+  //   fileChangeListener($event: any): void {
+  //     const files = $event.target.files;
+  //
+  //     this.ngxCsvParser
+  //       .parse(files[0], { header: this.header, delimiter: ',' })
+  //       .pipe()
+  //       .subscribe({
+  //         next: (result): void => {
+  //           this.csvRecords = result;
+  //           console.log('result', result);
+  //           this.store.dispatch(newFileCsv({ data: this.csvRecords }));
+  //         },
+  //         error: (error: NgxCSVParserError): void => {
+  //           console.log('Error', error);
+  //         },
+  //       });
+  //   }
+  //
   ngOnInit(): void {}
 }

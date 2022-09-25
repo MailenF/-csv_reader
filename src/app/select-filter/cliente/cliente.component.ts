@@ -14,7 +14,6 @@ import { Cliente } from '../../interfaces/cliente';
 })
 export class ClienteComponent implements OnInit {
   clientes$: Observable<Cliente[]> = new Observable();
-
   clienteFormControl = new FormControl();
 
   constructor(private store: Store<AppState>) {

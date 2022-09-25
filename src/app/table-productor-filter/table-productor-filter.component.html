@@ -1,33 +1,35 @@
-<pre *ngIf="productoresList$ | async as productores">
-  {{ productores | json }}
-</pre>
+<!--<pre *ngIf="productoresList$ | async as productores">-->
+<!--  {{ productores | json }}-->
+<!--</pre>-->
 
-<!--<div class="csv-result-table" *ngIf="productoresList$ | async as productores">-->
-<!--  <div *ngFor="let productor of productores">-->
-<!--    <h4 class="variedad"> {{ productor.productor }}</h4>-->
-<!--    <table class="table table-striped">-->
-<!--      <thead>-->
-<!--      <tr class="descripcion">-->
-<!--        <th scope="col">N° Pallet</th>-->
-<!--        <th scope="col">Cliente</th>-->
-<!--        <th scope="col">Cliente Código</th>-->
-<!--        <th scope="col">Destino</th>-->
-<!--        <th scope="col">Cajas</th>-->
-<!--        <th scope="col">Fecha de Cosecha</th>-->
-<!--        <th scope="col">Variedad</th>-->
-<!--      </tr>-->
-<!--      </thead>-->
-<!--      <tbody>-->
-<!--      <tr *ngFor="let vari of productor.lista">-->
-<!--        <td>{{ vari.numero }}</td>-->
-<!--        <td>{{ vari.cliente }}</td>-->
-<!--        <td>{{ vari.cliente_codigo }}</td>-->
-<!--        <td>{{ vari.destino }}</td>-->
-<!--        <td>{{ vari.cajas }}</td>-->
-<!--        <td>{{ vari.fecha_cosecha }}</td>-->
-<!--        <td>{{ vari.variedad }}</td>-->
-<!--      </tr>-->
-<!--      </tbody>-->
-<!--    </table>-->
-<!--  </div>-->
-<!--</div>-->
+<div class="csv-result-table" *ngIf="productoresList$ | async as productores">
+  <div *ngFor="let productor of productores">
+    <h4 class="variedad">
+      {{ productor.productor }}. (Código: {{ productor.productor_id }})
+    </h4>
+    <table class="table table-striped">
+      <thead>
+        <tr class="descripcion">
+          <th scope="col">N° Pallet</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Cliente Código</th>
+          <th scope="col">Destino</th>
+          <th scope="col">Cajas</th>
+          <th scope="col">Fecha de Cosecha</th>
+          <th scope="col">Variedad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vari of productor.lista">
+          <td>{{ vari.numero }}</td>
+          <td>{{ vari.cliente }}</td>
+          <td>{{ vari.cliente_codigo }}</td>
+          <td>{{ vari.destino }}</td>
+          <td>{{ vari.cajas }}</td>
+          <td>{{ vari.fecha_cosecha }}</td>
+          <td>{{ vari.variedad }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

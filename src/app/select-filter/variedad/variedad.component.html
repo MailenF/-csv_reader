@@ -16,9 +16,11 @@
       <!--          {{ clienteFormControl.value?.length === 2 ? "other" : "others" }})-->
       <!--        </span>-->
       <!--      </mat-select-trigger>-->
-      <mat-option *ngFor="let variedad of variedades" [value]="variedad">{{
-        variedad
-      }}</mat-option>
+      <mat-option
+        *ngFor="let variedad of variedades"
+        [value]="variedad.variedades"
+        >{{ variedad.variedades }}</mat-option
+      >
     </mat-select>
   </mat-form-field>
 </div>

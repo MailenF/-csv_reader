@@ -6,6 +6,8 @@ import { AppState } from '../../state/app.state';
 import { selectedProductores } from '../../state/selectors/pallets.selector';
 import { FormControl } from '@angular/forms';
 import { getCliente, getProductor } from '../../state/actions/pallets.action';
+import { ProductorState } from '../../interfaces/productor-state';
+import { Productores } from '../../interfaces/productores';
 
 @Component({
   selector: 'app-productor',
@@ -13,7 +15,7 @@ import { getCliente, getProductor } from '../../state/actions/pallets.action';
   styleUrls: ['./productor.component.css'],
 })
 export class ProductorComponent implements OnInit {
-  productores$: Observable<any> = new Observable();
+  productores$: Observable<Productores[]> = new Observable();
 
   productorFormControl = new FormControl();
 

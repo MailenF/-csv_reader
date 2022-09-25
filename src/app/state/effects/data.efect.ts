@@ -17,7 +17,6 @@ export class dataEffects {
   constructor(private actions$: Actions) {}
 
   mapNewData(data: CSV[]): Pallets[] {
-    console.log(data);
     const result: Pallets[] = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -32,7 +31,7 @@ export class dataEffects {
           detalle: [
             {
               variedad: data[0].Variedad,
-              cajas: data[0].Cajas,
+              cajas: Number(data[0].Cajas),
               fecha_cosecha: data[0].FechaCosecha,
               productor: data[0].Productor,
               productor_id: data[0].ProductorID,

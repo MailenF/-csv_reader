@@ -13,9 +13,9 @@ import { CSV } from '../interfaces/CSV';
 export class GetDataPalletsComponent implements OnInit {
   constructor(private ngxCsvParser: NgxCsvParser, private store: Store) {}
 
-  //------------------- LEER Y PARSE CSV SIN LIBRERIA ------------------------------------------
+  //------------------- READ AND PARSE CSV WITHOUT LIBRERY ------------------------------------------
 
-  //-------------------LEYENDO MI CSV CON FILEREADER--------------------------------------------
+  //-------------------LEYENDO MI CSV CON FILEREADER---------------------------------
 
   changeListener($event: any): void {
     const fileInput = $event.target.files[0];
@@ -35,7 +35,7 @@ export class GetDataPalletsComponent implements OnInit {
     }
   }
 
-  //------------------ VALIDACIÓN DE DATOS -------------------------------------------
+  //------------------ VALIDACIÓN DEL CSV ------------------------------------
 
   csvValitation(csv: any): void {
     const trim = csv.trim();
@@ -58,19 +58,20 @@ export class GetDataPalletsComponent implements OnInit {
     const variableMissing: string[] = [];
     const arr: CSV[] = [];
 
-    //---------------- CONVERSIÓN DE HEADERS A MINÚSCULA---------
+    //---------------- CONVERSIÓN DE HEADERS A MINÚSCULA-------------------------
 
     for (let i = 0; i < headers.length; i++) {
       const result = headers[i].toLowerCase();
       headerLower.push(result);
     }
 
-    //-----------------VALIDACIÓN CANTIDAD DE COLUMNAS----------
+    //-----------------VALIDACIÓN CANTIDAD DE COLUMNAS-----------------------------
 
     if (headers.length < 9) {
       for (let i = 0; i < prop.length; i++) {
         if (!headerLower.includes(prop[i])) {
           const result = prop[i].toUpperCase();
+          console.log(result);
           variableMissing.push(result);
         }
       }
@@ -96,19 +97,43 @@ export class GetDataPalletsComponent implements OnInit {
         }
       });
     } else {
-      for (let i = 0; i < rows.length; i++) {
-        const result = rows[i].split(delimiter);
-        const obj: any = {};
-        for (let h = 0; h < result.length; h++) {
-          const key = headers[h];
+      //--------------------VALIDAMOS POSICION DE COLUMNAS--------------------------------------
+      if (
+        headers[0].toLowerCase() != 'numeropallet' ||
+        headers[1].toLowerCase() != 'clientecodigo' ||
+        headers[2].toLowerCase() != 'cliente' ||
+        headers[3].toLowerCase() != 'destino' ||
+        headers[4].toLowerCase() != 'productorid' ||
+        headers[5].toLowerCase() != 'productor' ||
+        headers[6].toLowerCase() != 'fechacosecha' ||
+        headers[7].toLowerCase() != 'variedad' ||
+        headers[8].toLowerCase() != 'cajas'
+      ) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: ' Column positioning error. Please check that it follows the following format: NumeroPallets, ClienteCodigo, Cliente, Destino, ProductorId, Productor, Fechacosecha, Variedad, Cajas',
+          confirmButtonText: 'OK',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      } else {
+        for (let i = 0; i < rows.length; i++) {
+          const result = rows[i].split(delimiter);
+          const obj: any = {};
+          for (let h = 0; h < result.length; h++) {
+            const key = headers[h];
 
-          obj[key] = result[h];
+            obj[key] = result[h];
+          }
+          arr.push(obj);
         }
-        arr.push(obj);
       }
     }
 
-    //-------------------TRANFORMO MI CAJAS EN NUMBER-------------------------------------------
+    //-------------------TRANFORMO TIPO DE CAJAS EN NUMBER-------------------------------------------
 
     if (arr.length > 0) {
       for (let i = 0; i < arr.length; i++) {
